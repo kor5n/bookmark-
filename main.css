@@ -1,0 +1,16 @@
+h3{
+    color: blue;
+}
+body{
+    height: 100px;
+    width: 100px;
+}
+.bookmar-btn{
+    background-color: whitesmoke;
+    height: 20px;
+    width: 80px;
+}
+.bookmark:hover{
+    color:blue;
+    cursor: pointer;
+}

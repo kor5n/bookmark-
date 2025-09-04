@@ -1,0 +1,12 @@
+{
+    "name": "bookmark++",
+    "description": "bookmark for bookmarking positions in webpages",
+    "version": "1.0",
+    "manifest_version": 3,
+    "action": {
+      "default_popup": "index.html"
+    },
+    "permissions": ["activeTab", "storage", "declarativeContent", "tabs", "scripting"],
+    "host_permissions" : ["http://*/*", "https://*/*"]
+
+}
