@@ -2,16 +2,25 @@ const container = document.querySelector(".bookmark-div");
 const btn = document.querySelector(".bookmark-btn");
 let storage = [];
 
+const addBtnListener = (curDiv) => {
+  curDiv.querySelector(".rm-btn").addEventListener("click", () => {
+    console.log("remove button clicked");
+    storage.splice(storage.length-1, 1);
+    curDiv.remove();
+    chrome.storage.sync.set({"storage":storage});
+      })
+}
+
 chrome.storage.sync.get("storage", (result) => {
   storage = result.storage || [];
   console.log("Loaded storage:", storage);
 
   storage.forEach((url) => {
     const newEl = document.createElement("div");
-    newEl.className = "bookmark";
-    newEl.innerHTML = `<span>${url.split("//")[1].split("/")[0]}</span>`;
-    newEl.onclick = () => chrome.tabs.create({ url });
+    newEl.innerHTML = `<div class="bookmark">${url.split("//")[1].split("/")[0]}</div><button class="rm-btn">x</button>`;
     container.appendChild(newEl);
+    document.querySelectorAll(".bookmark")[storage.length -1].onclick = () => chrome.tabs.create({ url });
+    addBtnListener(newEl);
   });
 });
 
@@ -31,12 +40,12 @@ btn.addEventListener("click", async () => {
     if (!storage.includes(url)) {
       storage.push(url);
       const div = document.createElement("div");
-      div.className = "bookmark";
-      div.innerHTML = `<span>${url.split("//")[1].split("/")[0]}</span>`;
-
-      div.onclick = () => chrome.tabs.create({ url });
+      div.innerHTML = `<div class="bookmark">${url.split("//")[1].split("/")[0]}</div><button class="rm-btn">x</button>`;
 
       container.appendChild(div);
+      document.querySelectorAll(".bookmark")[storage.length -1].onclick = () => chrome.tabs.create({ url });
+
+      addBtnListener(div);
 
       //console.log("saving storage");
       chrome.storage.sync.set({"storage": storage });//save files

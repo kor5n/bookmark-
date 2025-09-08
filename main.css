@@ -10,7 +10,20 @@ body{
     height: 20px;
     width: 80px;
 }
+.bookmark{
+    display: inline;
+}
 .bookmark:hover{
     color:blue;
     cursor: pointer;
+}
+.rm-btn{
+    color: grey;
+    height: 5px;
+    width: 5px;
+    border: none;
+    background: none;
+}
+.rm-btn:hover{
+    color: red;
 }
