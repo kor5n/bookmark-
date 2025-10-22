@@ -1,10 +1,11 @@
 import {Bookmark} from "./bookmarkClass.js"
 
-let storage = []
-let clicked = false
+let clicked = false;
+let tab;
+let storage;
 
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
-  let tab = await chrome.tabs.get(activeInfo.tabId);
+  tab = await chrome.tabs.get(activeInfo.tabId);
   if (tab && /^https?:/.test(tab.url)) {
     chrome.scripting.executeScript({
       target: { tabId: tab.id },
@@ -17,23 +18,22 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
 chrome.runtime.onMessage.addListener(async (msg, sender) => {
   if (msg.type === "page_click") {
     //console.log(sender, msg);
-    console.log("Click detected on position", msg.details);
-    let clicked = await chrome.storage.sync.get({"clicked": clicked});
+    let clicked = await chrome.storage.sync.get("clicked");
     console.log(clicked);
-    if (clicked === true){
+    if (clicked.clicked === true){
       try{
-      storage = await chrome.storage.sync.get({"storage": storage});
-    }catch{
-      storage = [];
+        storage = await chrome.storage.sync.get("storage");
+      }catch{
+        await chrome.storage.sync.set({"storage":[]});
+        storage = await chrome.storage.sync.get("storage");
+      }
+      //console.log("message:",msg);
+      let newBookmark = new Bookmark(tab.url.split("//")[1].split("/")[0].replace("www.", ""), tab.url, msg.details[0], msg.details[1]);
+      storage.storage.push(newBookmark);
+      console.log("current storage", storage);
+      await chrome.storage.sync.set({"storage": storage});
+      await chrome.storage.sync.set({"clicked":false});
     }
-    chrome.storage.sync.set({"clicked":false});
-    }
-    
-    console.log(tab);
-
-    let newBookmark = new Bookmark(tab.url.split("//")[1].split("/")[0].replace("www.", ""), tab.url, msg.details[0], msg.details[1]);
-    storage.push(newBookmark);
-    console.log("current storage", storage);
   }
   chrome.runtime.onMessage.removeListener(msg, sender);
 });

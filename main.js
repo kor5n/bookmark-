@@ -1,4 +1,4 @@
-import {Bookmark} from "./bookmarkClass.js"
+//import {Bookmark} from "./bookmarkClass.js"
 
 const container = document.querySelector(".bookmark-div");
 const btn = document.querySelector(".bookmark-btn");
@@ -13,19 +13,28 @@ reset();
 
 const listener = async (curDiv, index) => {
   curDiv.querySelector(".rm-btn").addEventListener("click", async () => {
-    //console.log("remove button clicked");
-    storage.remove(document.querySelectorAll(".bookmark")[index]);
+    storage.splice(index, index);
     curDiv.remove();
     await chrome.storage.sync.set({"storage":storage});
 }); 
 };
 
-const syncStorage = async () => {
-  await chrome.storage.sync.get("storage", async (result) => {
-  storage = result.storage || [];
-  console.log("Loaded storage:", storage);
+const syncStorage = async () => {  
+  try{
+    storage = await chrome.storage.sync.get("storage");
+    if(typeof storage.storage !== Array ){
+      await chrome.storage.sync.set({"storage":[]});
+    }
+    storage = await chrome.storage.sync.get("storage");
+  }
+  catch{
+    await chrome.storage.sync.set({"storage":[]});
+    storage = [];
+  }
   let goto = [];
-  storage.forEach((bookmark, index) => {
+  console.log("storage:", storage);
+  try{
+    storage.storage.forEach((bookmark, index) => {
     const newEl = document.createElement("div");
     newEl.innerHTML = `<div class="bookmark">${bookmark.title}</div><button class="rm-btn">x</button>`;
     container.appendChild(newEl);
@@ -35,7 +44,10 @@ const syncStorage = async () => {
     listener(newEl, index);
   });
   await chrome.storage.sync.set({"goto" : goto});
-});
+  }catch (err){
+    console.log(err);
+  }
+  
 }
 
 syncStorage();
