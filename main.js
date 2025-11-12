@@ -13,36 +13,40 @@ reset();
 
 const listener = async (curDiv, index) => {
   curDiv.querySelector(".rm-btn").addEventListener("click", async () => {
-    storage.splice(index, index);
+    console.log("index",index);
+    storage.storage.splice(index, 1);
     curDiv.remove();
     await chrome.storage.sync.set({"storage":storage});
+    console.log("updated storage", await chrome.storage.sync.get());
 }); 
 };
 
-const syncStorage = async () => {  
+const syncStorage = async () => { 
+  console.log("current storage:", await chrome.storage.sync.get()); 
   try{
-    storage = await chrome.storage.sync.get("storage");
-    if(typeof storage.storage !== Array ){
-      await chrome.storage.sync.set({"storage":[]});
-    }
-    storage = await chrome.storage.sync.get("storage");
+    const data = await chrome.storage.sync.get();
+    console.log("storage data", data);
+    storage = data.storage;
   }
   catch{
     await chrome.storage.sync.set({"storage":[]});
     storage = [];
   }
   let goto = [];
-  console.log("storage:", storage);
+  console.log("local storage:", storage);
   try{
-    storage.storage.forEach((bookmark, index) => {
-    const newEl = document.createElement("div");
-    newEl.innerHTML = `<div class="bookmark">${bookmark.title}</div><button class="rm-btn">x</button>`;
-    container.appendChild(newEl);
-    //console.log(document);
-    goto.push([bookmark.x, bookmark.y]);
-    document.querySelectorAll(".bookmark")[index].onclick = () => chrome.tabs.create(bookmark.url);
-    listener(newEl, index);
-  });
+    storage.forEach((bookmark, index) => {
+      const newEl = document.createElement("div");
+      newEl = `<div class="bookmark">${bookmark.title}, pos: ${bookmark.x, bookmark.y}</div><button class="rm-btn">x</button>`;
+      container.appendChild(newEl);
+      goto.push([bookmark.x, bookmark.y]);
+      try{
+        document.querySelectorAll(".bookmark")[index].onclick = () => {chrome.tabs.create(bookmark.url)};
+      }catch{
+        document.querySelector(".bookmark").onclick = () => {c}
+      }
+      listener(newEl, index);
+    });
   await chrome.storage.sync.set({"goto" : goto});
   }catch (err){
     console.log(err);
@@ -54,6 +58,7 @@ syncStorage();
 
 btn.addEventListener("click", async () => {
   await chrome.storage.sync.set({"clicked" : true});
+  window.alert("Double click on the webpage to bookmark");
   /*console.log(storage);
   try {
     let [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
