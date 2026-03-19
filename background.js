@@ -3,6 +3,16 @@ import {Bookmark} from "./bookmarkClass.js"
 let tab;
 let storage;
 
+const Goto = async (tab, x,y) => {
+  await chrome.scripting.executeScript({
+    target: {tabId: tab.id},
+    func: (x,y) => {
+      window.scrollTo(x,y,"smooth");
+    },
+    args: [x,y]
+  });
+}
+
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
   tab = await chrome.tabs.get(activeInfo.tabId);
   if (tab && /^https?:/.test(tab.url)) {
@@ -10,6 +20,31 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
       target: { tabId: tab.id },
       files: ["content.js"]
     });
+
+    const data = await chrome.storage.sync.get();
+    storage = data.storage;
+
+    for (let i = 0; i<storage.length; i++){
+      console.log(tab.url, storage[i].url);
+      if (tab.url === storage[i].url){
+        Goto(tab, storage[i].x, storage[i].y);
+        break;
+      }
+    }
+  }
+});
+
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  if (changeInfo.status === "complete" && /^https?:/.test(tab.url)) {
+    const data = await chrome.storage.sync.get();
+    const storage = data.storage || [];
+
+    for (let i = 0; i < storage.length; i++) {
+      if (tab.url.startsWith(storage[i].url)) {
+        await Goto(tab, storage[i].x, storage[i].y);
+        break;
+      }
+    }
   }
 });
 

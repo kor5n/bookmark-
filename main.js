@@ -37,7 +37,7 @@ const syncStorage = async () => {
   try{
     storage.forEach((bookmark, index) => {
       const newEl = document.createElement("div");
-      newEl.innerHTML = `<div class="bookmark">${bookmark.title}, pos: ${bookmark.x, bookmark.y}</div><button class="rm-btn">x</button>`;
+      newEl.innerHTML = `<div class="bookmark">${bookmark.title}</div><button class="rm-btn">x</button>`;
       container.appendChild(newEl);
       goto.push([bookmark.x, bookmark.y]);
       try{
