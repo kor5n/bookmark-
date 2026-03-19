@@ -14,7 +14,7 @@ reset();
 const listener = async (curDiv, index) => {
   curDiv.querySelector(".rm-btn").addEventListener("click", async () => {
     console.log("index",index);
-    storage.storage.splice(index, 1);
+    storage.splice(index, 1);
     curDiv.remove();
     await chrome.storage.sync.set({"storage":storage});
     console.log("updated storage", await chrome.storage.sync.get());
@@ -37,13 +37,13 @@ const syncStorage = async () => {
   try{
     storage.forEach((bookmark, index) => {
       const newEl = document.createElement("div");
-      newEl = `<div class="bookmark">${bookmark.title}, pos: ${bookmark.x, bookmark.y}</div><button class="rm-btn">x</button>`;
+      newEl.innerHTML = `<div class="bookmark">${bookmark.title}, pos: ${bookmark.x, bookmark.y}</div><button class="rm-btn">x</button>`;
       container.appendChild(newEl);
       goto.push([bookmark.x, bookmark.y]);
       try{
-        document.querySelectorAll(".bookmark")[index].onclick = () => {chrome.tabs.create(bookmark.url)};
+        document.querySelectorAll(".bookmark")[index].addEventListener("click", () => {window.open(bookmark.url, '_blank')});
       }catch{
-        document.querySelector(".bookmark").onclick = () => {c}
+        document.querySelector(".bookmark").addEventListener("click", () => {c});
       }
       listener(newEl, index);
     });

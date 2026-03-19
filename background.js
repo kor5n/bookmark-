@@ -28,6 +28,7 @@ chrome.runtime.onMessage.addListener(async (msg, sender) => {
         storage = data.storage;  
       }
 
+      console.log(tab.url);
       const newBookmark = new Bookmark(tab.url.split("//")[1].split("/")[0].replace("www.", ""), tab.url, msg.details.position[0], msg.details.position[1]);
       console.log(newBookmark);
       console.log(storage);
