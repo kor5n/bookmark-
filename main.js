@@ -6,7 +6,6 @@ let storage = [];
 
 //reseting temporary storage
 const reset = async () => {
-  await chrome.storage.sync.set({"goto":[]});
   await chrome.storage.sync.set({"clicked": false})
 }
 reset();
@@ -32,14 +31,12 @@ const syncStorage = async () => {
     await chrome.storage.sync.set({"storage":[]});
     storage = [];
   }
-  let goto = [];
   console.log("local storage:", storage);
   try{
     storage.forEach((bookmark, index) => {
       const newEl = document.createElement("div");
       newEl.innerHTML = `<div class="bookmark">${bookmark.title}</div><button class="rm-btn">x</button>`;
       container.appendChild(newEl);
-      goto.push([bookmark.x, bookmark.y]);
       try{
         document.querySelectorAll(".bookmark")[index].addEventListener("click", () => {window.open(bookmark.url, '_blank')});
       }catch{
@@ -47,7 +44,6 @@ const syncStorage = async () => {
       }
       listener(newEl, index);
     });
-  await chrome.storage.sync.set({"goto" : goto});
   }catch (err){
     console.log(err);
   }
