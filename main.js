@@ -32,18 +32,22 @@ const syncStorage = async () => {
     storage = [];
   }
   console.log("local storage:", storage);
+  let bookmarks = storage.storage
   try{
-    storage.forEach((bookmark, index) => {
+    for (let i=0; i<bookmarks.length; i++){
       const newEl = document.createElement("div");
-      newEl.innerHTML = `<div class="bookmark">${bookmark.title}</div><button class="rm-btn">x</button>`;
+      console.log("new element")
+      newEl.innerHTML = `<div class="bookmark">${bookmarks[i].title}</div><button class="rm-btn">x</button>`;
+      console.log("added html")
       container.appendChild(newEl);
+      console.log("add child")
       try{
-        document.querySelectorAll(".bookmark")[index].addEventListener("click", () => {window.open(bookmark.url, '_blank')});
+        document.querySelectorAll(".bookmark")[i].addEventListener("click", () => {window.open(bookmarks[i].url, '_blank')});
       }catch{
-        document.querySelector(".bookmark").addEventListener("click", () => {c});
+        document.querySelector(".bookmark").addEventListener("click", () => {window.open(bookmarks[0].url, '_blank')});
       }
-      listener(newEl, index);
-    });
+      listener(newEl, i);
+    };
   }catch (err){
     console.log(err);
   }
