@@ -2,7 +2,7 @@
 
 const container = document.querySelector(".bookmark-div");
 const btn = document.querySelector(".bookmark-btn");
-let storage = [];
+let storage;
 
 //reseting temporary storage
 const reset = async () => {
@@ -13,7 +13,7 @@ reset();
 const listener = async (curDiv, index) => {
   curDiv.querySelector(".rm-btn").addEventListener("click", async () => {
     console.log("index",index);
-    storage.splice(index, 1);
+    storage.storage.splice(index, 1);
     curDiv.remove();
     await chrome.storage.sync.set({"storage":storage});
     console.log("updated storage", await chrome.storage.sync.get());
@@ -29,7 +29,7 @@ const syncStorage = async () => {
   }
   catch{
     await chrome.storage.sync.set({"storage":[]});
-    storage = [];
+    storage.storage = [];
   }
   console.log("local storage:", storage);
   let bookmarks = storage.storage
